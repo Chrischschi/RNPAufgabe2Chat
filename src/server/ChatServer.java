@@ -6,7 +6,7 @@ public class ChatServer {
 	
 	
 	
-	//und startet einen neuen Arbeits-Thread für jede Verbindung,
+	//und startet einen neuen Arbeits-Thread fÃ¼r jede Verbindung,
 	class ChatServerWorkThread extends java.lang.Thread {
 		
 	}
