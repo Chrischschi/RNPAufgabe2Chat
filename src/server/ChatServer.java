@@ -8,7 +8,7 @@ public class ChatServer {
 	public static final int PORT_NUMBER = 50000; 
 	
 	//die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
-	private List<ChatUser> loggedInClients;
+	public List<ChatUser> loggedInClients; //TODO: später private machen
 	
 	
 	
@@ -17,12 +17,15 @@ public class ChatServer {
 		
 	}
 	
+	/* Wichtig für den befehl NEW aus dem Protokoll*/
 	public void logClientIn(String username, InetAddress hostname) {
-		//TODO: Use this.addClient
+		
 	}
 	
 	public void addClient(ChatUser newUser) {
-		//TODO: Implement 
+		//vielleicht in einen synchronized-block packen? 
+		// Mehrere Threads werden das hier eventuell gleichzeitig aufrufen!
+		loggedInClients.add(newUser);
 	}
 	
 

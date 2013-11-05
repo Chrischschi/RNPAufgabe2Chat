@@ -15,5 +15,13 @@ public class ChatUser {
 		this.hostName = hostName;
 	}
 	
+	public boolean equals(Object o) {
+		if(this == o) return true;
+		if(!(o instanceof ChatUser)) return false;
+		ChatUser that = (ChatUser) o;
+		return this.chatName.equals(that.chatName) && 
+			   this.hostName.equals(that.hostName);
+	}
+	
 
 }
