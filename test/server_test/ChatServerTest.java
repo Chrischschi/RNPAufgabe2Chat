@@ -2,19 +2,45 @@ package server_test;
 
 import static org.junit.Assert.*;
 
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
 import java.net.InetAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 
 import server.ChatServer;
 import server.ChatUser;
 
 public class ChatServerTest {
+	
+	private ChatServer c;
+	private ByteArrayOutputStream mySysOut = new ByteArrayOutputStream(); //zum testen von Sysouts
+	
+	
+	
+	@Before 
+	public void setUpServer() {
+		c = new ChatServer();
+		c.loggedInClients = new ArrayList<>();
+	}
+	@Before 
+	public void setUpMyStreams() {
+		System.setOut(new PrintStream(mySysOut));
+	}
 
 	@Test
 	public void testLogClientIn() {
-		fail("Not yet implemented");
+	    c.logClientIn("Christian",InetAddress.getLoopbackAddress()); 
+	    //mySysOut ist jetzt voll mit den println-messages aus logClientIn
+	    List<String> outputs = Arrays.asList(mySysOut.toString().split("\r\n")); //splitten beim newline
+	    //TODO outputs mit expected messages vergleichen.
+	    assertTrue("Test Log Client In: Erfolgreiche Eingeloggt message korrekt",outputs.contains(ChatServer.SUCCESSFUL_LOGIN_MSG));
+	    
 	}
 
 	@Test
@@ -30,5 +56,12 @@ public class ChatServerTest {
 	    			c.loggedInClients.contains(new ChatUser("Christian",address))
 	    		  );
 	}
+	
+	@After
+	public void tearDownMyStreams() {
+		System.setOut(null);
+	}
+	
+	
 
 }
