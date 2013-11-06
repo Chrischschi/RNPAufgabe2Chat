@@ -8,6 +8,8 @@ public class ChatServer {
 	public static final int PORT_NUMBER = 50000;
 
 	public static final String SUCCESSFUL_LOGIN_MSG = "Client logged in successfully!";
+
+	public static final String LOGIN_START_MSG = "Client trying to log in";
 	
 	//die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
 	public List<ChatUser> loggedInClients; //TODO: später private machen
@@ -21,6 +23,10 @@ public class ChatServer {
 	
 	/* Wichtig für den befehl NEW aus dem Protokoll*/
 	public void logClientIn(String username, InetAddress hostname) {
+		System.out.println(LOGIN_START_MSG);
+		this.addClient(new ChatUser(username, hostname)); //prüfen, ob chatuser schon in liste existiert?
+		
+		
 		//TODO: Use this.addClient
 		System.out.println(SUCCESSFUL_LOGIN_MSG);
 	}
