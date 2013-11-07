@@ -142,7 +142,7 @@ public class ChatServer {
 			//Das wird defensiv programmiert, falls etwas nach dem info kommt...
 			if (messageParts.length > 1) {
 				//wird ein fehler an den client geschickt!
-				writeToClientErr("No Parameters after INFO allowed");
+				sendError("No Parameters after INFO allowed");
 			} else {
 				StringBuilder msgBuilder = new StringBuilder("LIST ");
 				// die anzahl der eingeloggten clients in die liste schreiben 
