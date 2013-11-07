@@ -199,6 +199,7 @@ public class ChatServer {
 						ChatServer.logClientIn(newUser); //Aufm server
 						this.isLoggedIn = true; // Im serverthread
 						this.saveUser(newUser);
+						writeToClientOut("OK"); // laut spezifikation soll das an den client gesendet werden.
 					} else { sendError("Username invalid: contains special characters"); }
 				} else { sendError("Username invalid: contains spaces"); }
 			} else {
