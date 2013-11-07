@@ -7,6 +7,8 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class ChatServer {
@@ -18,7 +20,8 @@ public class ChatServer {
 	public static final String LOGIN_START_MSG = "Client trying to log in";
 	
 	//die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
-	public List<ChatUser> loggedInClients; //TODO: später private machen
+    public static List<ChatUser> loggedInClients = 
+			Collections.synchronizedList(new ArrayList<ChatUser>()); 
 	
 	public static void main(String[] args) {
 		ServerSocket welcomeSocket; 
@@ -49,16 +52,16 @@ public class ChatServer {
 	
 	
 	/* Wichtig für den befehl NEW aus dem Protokoll*/
-	public void logClientIn(String username, InetAddress hostname) {
+	public static void logClientIn(String username, InetAddress hostname) {
 		System.out.println(LOGIN_START_MSG);
-		this.addClient(new ChatUser(username, hostname)); //prüfen, ob chatuser schon in liste existiert?
+		addClient(new ChatUser(username, hostname)); //prüfen, ob chatuser schon in liste existiert?
 		
 		
 		//TODO: Use this.addClient
 		System.out.println(SUCCESSFUL_LOGIN_MSG);
 	}
 	
-	public void addClient(ChatUser newUser) {
+	public static void addClient(ChatUser newUser) {
 		//vielleicht in einen synchronized-block packen? 
 		// Mehrere Threads werden das hier eventuell gleichzeitig aufrufen!
 		loggedInClients.add(newUser);
@@ -114,7 +117,7 @@ public class ChatServer {
 					case "NEW": doNew(messageParts); break;
 					case "INFO": doInfo(messageParts); break; 
 					case "BYE": doBye(messageParts); break;
-					default: String reason = "Unknown Message to Server" ;sendError(reason);
+					default: String reason = "Unknown Message to Server" ; sendError(reason);
 					}
 				}
 	
@@ -127,18 +130,37 @@ public class ChatServer {
 		 * verantwortet. Fehler können bei falschen 
 		 * @param reason der grund, warum der server ERROR an den client sendet
 		 */
-		private void sendError(String reason) {
-			
-			
+		private void sendError(String reason) throws IOException {
+			writeToClientErr(reason);			
 		}
 
 		/**
 		 * Methode, die ausgeführt werden soll, wenn der Server die nachricht "INFO" bekommen soll.
 		 * @param messageParts die message vom client als zerlegte strings.
 		 */
-		private void doInfo(String[] messageParts) {
-			//TODO: herausfinden, wie ich an die instanzvariable loggedInClients aus ChatServer herankommen soll! 
-			//evtl ChatServer komplett statisch machen, nur die threads sind dann OO
+		private void doInfo(String[] messageParts) throws IOException {
+			//Das wird defensiv programmiert, falls etwas nach dem info kommt...
+			if (messageParts.length > 1) {
+				//wird ein fehler an den client geschickt!
+				writeToClientErr("No Parameters after INFO allowed");
+			} else {
+				StringBuilder msgBuilder = new StringBuilder("LIST ");
+				// die anzahl der eingeloggten clients in die liste schreiben 
+				msgBuilder.append(ChatServer.loggedInClients.size()); 
+				msgBuilder.append(" "); //Leerzeichen als trenner zwischen den parametern
+				
+				for(ChatUser u : ChatServer.loggedInClients) {
+					//hostname wie detailliert angeben?
+					msgBuilder.append(u.hostName.getHostName() + " ");
+					//userName angeben
+					msgBuilder.append(u.chatName + " ");
+				}
+				msgBuilder.append("\n"); //nachricht mit newline abschließen
+				
+				writeToClientOut(msgBuilder.toString());
+				
+			}
+			
 			
 		}
 
@@ -157,6 +179,24 @@ public class ChatServer {
 			System.out.println("Chat Server Thread " + threadId + " detected job: " + request);
 			return request;
 		}
+		
+
+		private void writeToClientErr(String reply) throws IOException {
+			/* Sende den String als Antwortzeile (mit newline) zum Client, 
+			 * log wird auf System.err ausgegeben, für fehlernachrichten! */
+			outToClient.writeBytes(reply + '\n');
+			System.err.println("TCP Server Thread " + threadId
+					+ " has written the message: " + reply);
+		}
+		
+
+		private void writeToClientOut(String reply) throws IOException {
+			/* Sende den String als Antwortzeile (mit newline) zum Client */
+			outToClient.writeBytes(reply + '\n');
+			System.out.println("TCP Server Thread " + threadId
+					+ " has written the message: " + reply);
+		}
+		
 		
 		
 		
