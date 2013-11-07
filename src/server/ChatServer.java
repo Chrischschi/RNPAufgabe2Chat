@@ -15,9 +15,9 @@ public class ChatServer {
 	//Der Server wartet auf TCP-Verbindungsanfragen auf Port 50000
 	public static final int PORT_NUMBER = 50000;
 
-	public static final String SUCCESSFUL_LOGIN_MSG = "Client logged in successfully!";
+	public static final String SUCCESSFUL_LOGIN_MSG = "Client %s from host %s logged in successfully!";
 
-	public static final String LOGIN_START_MSG = "Client trying to log in";
+	public static final String LOGIN_START_MSG = "Client %s from host %s trying to log in";
 	
 	//die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
     public static List<ChatUser> loggedInClients = 
@@ -53,12 +53,10 @@ public class ChatServer {
 	
 	/* Wichtig fÃ¼r den befehl NEW aus dem Protokoll*/
 	public static void logClientIn(ChatUser newUser) {
-		System.out.println(LOGIN_START_MSG);
+		System.out.println(String.format(LOGIN_START_MSG,newUser.chatName,newUser.hostName.getCanonicalHostName()));
 		addClient(newUser); //prÃ¼fen, ob chatuser schon in liste existiert?
 		
-		
-		//TODO: Use this.addClient
-		System.out.println(SUCCESSFUL_LOGIN_MSG);
+		System.out.println(String.format(SUCCESSFUL_LOGIN_MSG, newUser.chatName,newUser.hostName.getCanonicalHostName()));
 	}
 	
 	public static void addClient(ChatUser newUser) {
@@ -87,9 +85,9 @@ public class ChatServer {
 		private BufferedReader inFromClient; 
 		private DataOutputStream outToClient;
 		
-		/* wir brauchen für unsere Serverthreads zwei zustände,
-		 * einen fürs Einloggen 
-		 * einen anderen für Info und Ausloggen.
+		/* wir brauchen fï¿½r unsere Serverthreads zwei zustï¿½nde,
+		 * einen fï¿½rs Einloggen 
+		 * einen anderen fï¿½r Info und Ausloggen.
 		 */
 		private boolean isLoggedIn = false;
 		
@@ -156,7 +154,7 @@ public class ChatServer {
 
 		private void logUserOut(ChatUser user) {
 			ChatServer.logClientOut(user);
-			this.chatUser = null; // über den benutzer vergessen.
+			this.chatUser = null; // ï¿½ber den benutzer vergessen.
 			
 		}
 
