@@ -154,7 +154,7 @@ public class ChatServer {
 
 		private void logUserOut(ChatUser user) {
 			ChatServer.logClientOut(user);
-			this.chatUser = null; // �ber den benutzer vergessen.
+			this.chatUser = null; // über den benutzer vergessen.
 			
 		}
 
@@ -183,7 +183,9 @@ public class ChatServer {
 		}
 
 		private void doBye(String[] messageParts) throws IOException {
+				logUserOut(chatUser);
 				writeToClientOut("BYE");
+				
 				serviceRequested=false;
 		}
 
