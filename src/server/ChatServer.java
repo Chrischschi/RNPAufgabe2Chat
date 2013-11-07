@@ -52,9 +52,9 @@ public class ChatServer {
 	
 	
 	/* Wichtig fÃ¼r den befehl NEW aus dem Protokoll*/
-	public static void logClientIn(String username, InetAddress hostname) {
+	public static void logClientIn(ChatUser newUser) {
 		System.out.println(LOGIN_START_MSG);
-		addClient(new ChatUser(username, hostname)); //prÃ¼fen, ob chatuser schon in liste existiert?
+		addClient(newUser); //prÃ¼fen, ob chatuser schon in liste existiert?
 		
 		
 		//TODO: Use this.addClient
@@ -66,6 +66,14 @@ public class ChatServer {
 		// Mehrere Threads werden das hier eventuell gleichzeitig aufrufen!
 		loggedInClients.add(newUser);
 	}
+
+
+
+	public static boolean logClientOut(ChatUser user) {
+		return loggedInClients.remove(user);
+		
+	}
+	
 	
 
 }
@@ -79,7 +87,14 @@ public class ChatServer {
 		private BufferedReader inFromClient; 
 		private DataOutputStream outToClient;
 		
+		/* wir brauchen für unsere Serverthreads zwei zustände,
+		 * einen fürs Einloggen 
+		 * einen anderen für Info und Ausloggen.
+		 */
+		private boolean isLoggedIn = false;
+		
 		private boolean serviceRequested = true; //bei BYE vom client wird das hier umgestellt. 
+		private ChatUser chatUser; //wird bei NEW gesetzt. Speichert die daten von dem benutzer, mit dem die sitzung stattfindet.
 		
 		//TODO: Entscheiden, welcher der beiden konstruktoren ich brauche.
 		public ChatServerWorkThread(int id, Socket sock) {
@@ -114,12 +129,15 @@ public class ChatServer {
 					String command = messageParts[0]; // der erste teil der message zeigt an, ob es NEW, INFO oder BYE ist.
 					
 					switch(command) {
-					case "NEW": doNew(messageParts); break;
-					case "INFO": doInfo(messageParts); break; 
+					case "INFO": doInfo(); break; 
 					case "BYE": doBye(messageParts); break;
+					case "NEW": doNew(messageParts, workingSocket.getInetAddress()); break;
 					default: String reason = "Unknown Message to Server" ; sendError(reason);
 					}
 				}
+				
+				
+				workingSocket.close();
 	
 			}  catch (IOException e) {
 				e.printStackTrace(System.err);
@@ -131,19 +149,22 @@ public class ChatServer {
 		 * @param reason der grund, warum der server ERROR an den client sendet
 		 */
 		private void sendError(String reason) throws IOException {
-			writeToClientErr(reason);			
+			writeToClientErr("ERROR " + reason);
+			serviceRequested = false;
+			logUserOut(chatUser);
+		}
+
+		private void logUserOut(ChatUser user) {
+			ChatServer.logClientOut(user);
+			this.chatUser = null; // über den benutzer vergessen.
+			
 		}
 
 		/**
 		 * Methode, die ausgefÃ¼hrt werden soll, wenn der Server die nachricht "INFO" bekommen soll.
 		 * @param messageParts die message vom client als zerlegte strings.
 		 */
-		private void doInfo(String[] messageParts) throws IOException {
-			//Das wird defensiv programmiert, falls etwas nach dem info kommt...
-			if (messageParts.length > 1) {
-				//wird ein fehler an den client geschickt!
-				sendError("No Parameters after INFO allowed");
-			} else {
+		private void doInfo() throws IOException {
 				StringBuilder msgBuilder = new StringBuilder("LIST ");
 				// die anzahl der eingeloggten clients in die liste schreiben 
 				msgBuilder.append(ChatServer.loggedInClients.size()); 
@@ -159,19 +180,35 @@ public class ChatServer {
 				
 				writeToClientOut(msgBuilder.toString());
 				
+			
+			
+		}
+
+		private void doBye(String[] messageParts) throws IOException {
+				writeToClientOut("BYE");
+				serviceRequested=false;
+		}
+
+		private void doNew(String[] messageParts, InetAddress hostName) throws IOException {
+			if(!isLoggedIn){ 
+				if(messageParts.length == 2) { //dann hat der username keine leerzeichen, da er nicht zerlegt wurde.
+				String userName = messageParts[1];
+				String allowedCharacters = "([a-zA-Z]|[0-9])+";
+					if(userName.matches(allowedCharacters)) {
+						ChatUser newUser = new ChatUser(userName,hostName);
+						ChatServer.logClientIn(newUser); //Aufm server
+						this.isLoggedIn = true; // Im serverthread
+						this.saveUser(newUser);
+					} else { sendError("Username invalid: contains special characters"); }
+				} else { sendError("Username invalid: contains spaces"); }
+			} else {
+				sendError("Client already logged in");
 			}
 			
-			
 		}
 
-		private void doBye(String[] messageParts) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		private void doNew(String[] messageParts) {
-			
-			
+		private void saveUser(ChatUser justLoggedIn) {
+			this.chatUser = justLoggedIn;
 		}
 
 		private String readFromClient() throws IOException  {
@@ -196,8 +233,6 @@ public class ChatServer {
 			System.out.println("TCP Server Thread " + threadId
 					+ " has written the message: " + reply);
 		}
-		
-		
 		
 		
 		

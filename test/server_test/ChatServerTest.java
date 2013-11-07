@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import server.ChatServer;
@@ -35,7 +36,7 @@ public class ChatServerTest {
 
 	@Test
 	public void testLogClientIn() {
-	    c.logClientIn("Steffen",InetAddress.getLoopbackAddress()); 
+	    c.logClientIn(new ChatUser("Steffen",InetAddress.getLoopbackAddress())); 
 	    //mySysOut ist jetzt voll mit den println-messages aus logClientIn
 	    List<String> outputs = Arrays.asList(mySysOut.toString().split("\r\n")); //splitten beim newline => jedes sysout benutzt println!
 	    assertTrue("Test Log Client in: Message beim start des einloggens korrekt", outputs.contains(ChatServer.LOGIN_START_MSG));
