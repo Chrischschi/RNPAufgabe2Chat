@@ -13,7 +13,6 @@ class ChatServerWorkThread extends java.lang.Thread {
 	private static final String ALLOWED_CHARACTERS = "([a-zA-Z]|[0-9])+";
 	int threadId; // Die id des threads
 	Socket workingSocket; // Der socket der dem Thread zugeteilt wurde.
-	ChatServer assocSrv; // Der server, zu dem der server-thread gehört
 
 	private BufferedReader inFromClient;
 	private DataOutputStream outToClient;
@@ -31,17 +30,11 @@ class ChatServerWorkThread extends java.lang.Thread {
 								// dem benutzer, mit dem die sitzung
 								// stattfindet.
 
-	// TODO: Entscheiden, welcher der beiden konstruktoren ich brauche.
 	public ChatServerWorkThread(int id, Socket sock) {
 		this.threadId = id;
 		this.workingSocket = sock;
 	}
 
-	public ChatServerWorkThread(int id, Socket sock, ChatServer associatedServer) {
-		this.threadId = id;
-		this.workingSocket = sock;
-		this.assocSrv = associatedServer;
-	}
 
 	public void run() {
 		String messageFromClient; // das was der client einem gesendet hat.

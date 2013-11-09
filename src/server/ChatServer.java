@@ -20,13 +20,11 @@ public class ChatServer {
 			.synchronizedList(new ArrayList<ChatUser>());
 
 	public static void main(String[] args) {
-		ServerSocket welcomeSocket;
 		Socket connectionSocket;
 
 		int counter = 0; // Zählt die erzeugten Bearbeitungs-Threads
 
-		try {
-			welcomeSocket = new ServerSocket(PORT_NUMBER);
+		try (ServerSocket welcomeSocket = new ServerSocket(PORT_NUMBER);) {
 
 			while (true) { // Server sollten immer laufen, vielleicht einen
 							// quit-befehl einbauen?
