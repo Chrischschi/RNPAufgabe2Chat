@@ -1,11 +1,11 @@
 package client;
 
+import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.List;
 
-import server.ChatServer;
 import server.ChatUser;
 import static client.ChatClient.*;
 
@@ -18,11 +18,7 @@ import static client.ChatClient.*;
  *
  */
 public class ClientSenderThread implements Runnable {
-	private static int COLON_AND_SPACE = 2;
-	
-	private static int DATAGRAM_SIZE =
-			ChatClient.MAX_CHAT_NAME_LENGTH + COLON_AND_SPACE  + MAX_CHAT_MSG_LENGTH + 1; 
-			//1 für das newline am ende
+	static int COLON_AND_SPACE = 2;
 	
 	private DatagramSocket outToOtherClients;
 	
@@ -44,19 +40,34 @@ public class ClientSenderThread implements Runnable {
 
 	private void broadCast(String msg, List<ChatUser> recievers) {
 		
-		for(ChatUser u : recievers) {
-			String sendString = u.chatName + ": " + msg + "\n"; 
+		for(ChatUser user : recievers) {
+			//String, der beim anderen client angezeigt werden soll, zusammenbauen
+			String sendString = user.chatName + ": " + msg + "\n"; 
+			//String-inhalt als UTF-8 kodiertes byte-array bereitstellen
 			byte[] sendData = sendString.getBytes(REQUIRED_CHARSET);
-			assert(sendData.length <= DATAGRAM_SIZE); //TODO remove assert after testing
 			
-			DatagramPacket sendPacket = new DatagramPacket(sendData, DATAGRAM_SIZE, u.hostName , PEER_PORT);
-			sendMsgTo(u,sendPacket);
+			assert sendData.length <= ChatClient.DATAGRAM_SIZE : "sendData won't fit in datagram!"; //TODO remove assert after testing
+			
+			//Datagramm-paket packen
+			DatagramPacket sendPacket = new DatagramPacket(sendData, ChatClient.DATAGRAM_SIZE, user.hostName,PEER_PORT);
+			System.out.println("Chat Client tries to send message " + msg + " to Peer " + user.chatName +
+					" at " + user.hostName );
+			sendMsgToPeer(user,sendPacket, msg);
 		}
 		
 	}
 
-	private void sendMsgTo(ChatUser u, DatagramPacket sendPacket) {
-		// TODO Auto-generated method stub
+	private void sendMsgToPeer(ChatUser u, DatagramPacket sendPacket,String msg)  {
+		try {
+			outToOtherClients.send(sendPacket);
+			System.out.println("Chat Client sent message " + msg + " to Peer " + u.chatName +
+					" at " + u.hostName + " !");
+		} catch (IOException e) {
+			System.err.println("Couldn't deliver Message to " + u.chatName + " at " + u.hostName );
+			e.printStackTrace();
+		}
+		
+		
 		
 	}
 

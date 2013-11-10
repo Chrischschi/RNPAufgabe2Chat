@@ -17,6 +17,11 @@ public class ChatClient {
 	public static final int MAX_CHAT_MSG_LENGTH = 100;
 	public static final Charset REQUIRED_CHARSET = Charset.forName("UTF-8"); 
 	
+	//Abhängige Konstanten 
+	public static int DATAGRAM_SIZE = //+1 am ende für das newline
+			MAX_CHAT_NAME_LENGTH + ClientSenderThread.COLON_AND_SPACE  + MAX_CHAT_MSG_LENGTH + 1; 
+	
+	
 	/*Liste wird von ClientServerCommunicator befüllt, 
 	 * mit daten aus einer INFO-nachricht vom server
 	 */
@@ -56,5 +61,7 @@ public class ChatClient {
 	private static void startServerThread() {
 		(new ClientServerCommunicator()).start();
 	}
+
+
 
 }
