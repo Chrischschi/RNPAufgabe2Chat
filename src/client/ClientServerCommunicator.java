@@ -13,6 +13,15 @@ import java.util.List;
 import server.ChatUser;
 
 public class ClientServerCommunicator extends Thread {
+	
+	/* Regulärer ausdruck für String.split, 
+	 * Aus Hübners spezifikation: "Message-Name
+	 * und Parameter werden durch mindestens
+	 * ein Leerzeichen getrennt.", Also
+	 * mindestens ein leerzeichen, danach 
+	 * beliebig viele, das ist " +".
+	 */
+	private static final String ONE_OR_MORE_SPACES = " +"; 
 
 	public static final int SERVER_PORT = 50000;
 
@@ -23,14 +32,14 @@ public class ClientServerCommunicator extends Thread {
 
 	private int delayInSeconds = 5;
 
-	public void startJob(String userName) {
+	public void startJob(String userName, String serverHostName) {
 		/* Client starten. Ende, wenn quit eingegeben wurde */
 		String response; // vom User übergebener String
 
 		/* Ab Java 7: try-with-resources mit automat. close benutzen! */
 		try {
 			/* Socket erzeugen --> Verbindungsaufbau mit dem Server */
-			clientSocket = new Socket("localhost", SERVER_PORT);
+			clientSocket = new Socket(serverHostName, SERVER_PORT);
 
 			/* Socket-Basisstreams durch spezielle Streams filtern */
 			outToServer = new DataOutputStream(clientSocket.getOutputStream());
@@ -77,8 +86,9 @@ public class ClientServerCommunicator extends Thread {
 		// Since the last Hostname is followed by the
 		// corresponding chatname, maxUserIndex will
 		// modifiedResponse.length -1.
-
-		modifiedResponse = response.split(" "); // split Response into the
+		
+		
+		modifiedResponse = response.split(ONE_OR_MORE_SPACES); // split Response into the
 		// single Parts
 		maxUserIndex = modifiedResponse.length - 1; // ->see declaration
 		// The Response Array Looks like this:
