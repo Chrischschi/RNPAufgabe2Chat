@@ -8,6 +8,13 @@ import java.util.Collections;
 import java.util.List;
 
 public class ChatServer {
+	//Konstanten, die von ChatClient und dem ChatServerWorkThread benutzt werden.
+	public static final String NEW = "NEW";
+
+	public static final String BYE = "BYE";
+
+	public static final String INFO = "INFO";
+	
 	// Der Server wartet auf TCP-Verbindungsanfragen auf Port 50000
 	public static final int PORT_NUMBER = 50000;
 
@@ -73,6 +80,8 @@ public class ChatServer {
 		return loggedInClients.remove(user);
 
 	}
+
+
 
 }
 

@@ -67,13 +67,13 @@ class ChatServerWorkThread extends java.lang.Thread {
 													// oder BYE ist.
 
 				switch (command) {
-				case "INFO":
+				case ChatServer.INFO:
 					doInfo();
 					break;
-				case "BYE":
+				case ChatServer.BYE:
 					doBye(messageParts);
 					break;
-				case "NEW":
+				case ChatServer.NEW:
 					doNew(messageParts, workingSocket.getInetAddress());
 					break;
 				default:
@@ -135,7 +135,7 @@ class ChatServerWorkThread extends java.lang.Thread {
 
 	private void doBye(String[] messageParts) throws IOException {
 		logUserOut(chatUser);
-		writeToClientOut("BYE");
+		writeToClientOut(ChatServer.BYE);
 
 		serviceRequested = false;
 	}
