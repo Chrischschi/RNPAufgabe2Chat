@@ -27,6 +27,12 @@ public class ChatClient {
 	 */
 	static List<ChatUser> users = new ArrayList<>(); 
 	
+	private static boolean serviceRequested = true;
+
+	public static boolean isServiceRequested() {
+	  return serviceRequested;
+	}
+	
 	private static InetAddress serverIpAddressTcp; 
 	
 	public static void main(String[] args) {
