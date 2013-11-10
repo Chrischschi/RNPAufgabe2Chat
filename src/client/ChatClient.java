@@ -1,6 +1,7 @@
 package client;
 
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -33,7 +34,8 @@ public class ChatClient {
 	  return serviceRequested;
 	}
 	
-	private static InetAddress serverIpAddressTcp; 
+	private static String logInName; //der name, mit dem man sich beim server einloggt
+	private static InetAddress serverIpAddressTcp; //addresse des servers
 	
 	public static void main(String[] args) {
 		//Der hostname des servers wird als parameter über args übergeben.
@@ -56,16 +58,21 @@ public class ChatClient {
 		
 		//Thread B is started from the GUI
 		
-		startRecieverThread(); //Thread C
+		try {
+			startRecieverThread();
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace(System.err);
+		} //Thread C
 		
 	}
 
-	private static void startRecieverThread() {
-		(new ClientMessageReciever(serverIpAddressTcp)).start();
+	private static void startRecieverThread() throws SocketException {
+		(new ClientMessageReciever()).start();
 	}
 
 	private static void startServerThread() {
-		(new ClientServerCommunicator()).start();
+		(new ClientServerCommunicator(logInName,serverIpAddressTcp.getCanonicalHostName())).start();
 	}
 
 

@@ -31,6 +31,7 @@ public class ClientSenderThread implements Runnable {
 		this.outToOtherClients = new DatagramSocket();
 		this.msgToBroadcast = msg;
 		this.deliverTo = users;
+		System.out.println("Created Client Sender Thread on Port " + outToOtherClients.getPort());
 	}
 
 	@Override
