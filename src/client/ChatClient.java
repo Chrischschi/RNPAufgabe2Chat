@@ -15,7 +15,6 @@ public class ChatClient {
 	public static final int PEER_PORT = 50001; 
 	public static final int MAX_CHAT_NAME_LENGTH = 20; 
 	public static final int MAX_CHAT_MSG_LENGTH = 100;
-	//kA, ob ich das charset irgendwo explizit angeben muss.
 	public static final Charset REQUIRED_CHARSET = Charset.forName("UTF-8"); 
 	
 	/*Liste wird von ClientServerCommunicator befüllt, 
