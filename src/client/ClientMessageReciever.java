@@ -3,10 +3,7 @@ package client;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.List;
-
 import static client.ChatClient.*;
 
 public class ClientMessageReciever extends Thread {
@@ -25,7 +22,7 @@ public class ClientMessageReciever extends Thread {
 			lastRecievedMessage = recieveMessage();
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			e.printStackTrace(System.err);
 		}
 		updateClient(lastRecievedMessage);
 		}
@@ -34,9 +31,8 @@ public class ClientMessageReciever extends Thread {
 	/* Sorgt dafür, dass die nachricht in das Chat-Protokoll
 	 * eingetragen wird.
 	 */
-	private void updateClient(String lastRecievedMessage2) {
-		// TODO Call to ChatClient
-		
+	private void updateClient(String msgToAppend) {
+		ChatClient.appendNewMessage(msgToAppend);
 	}
 
 	/* Lauscht nach chat-nachrichten und extrahiert den string aus diesen. */

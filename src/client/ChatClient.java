@@ -26,7 +26,16 @@ public class ChatClient {
 	/*Liste wird von ClientServerCommunicator befüllt, 
 	 * mit daten aus einer INFO-nachricht vom server
 	 */
-	static List<ChatUser> users = new ArrayList<>(); 
+	static List<ChatUser> users = new ArrayList<>();
+	
+	/*
+	 * ein puffer, welcher die von ClientMessageReciever gelesenen
+	 * nachrichten zwischenspeichert, damit sie von der gui konsumiert
+	 * werden können. Ich habe ehrlich gesagt keine ahnung, wie ich 
+	 * das JTextField befüllen soll.
+	 */
+	static StringBuffer chatMessages = new StringBuffer(DATAGRAM_SIZE * 10); 
+	//TODO Entscheiden, ob ich diesen StringBuffer gebrauchen kann.
 	
 	private static boolean serviceRequested = true;
 
@@ -73,6 +82,16 @@ public class ChatClient {
 
 	private static void startServerThread() {
 		(new ClientServerCommunicator(logInName,serverIpAddressTcp.getCanonicalHostName())).start();
+	}
+
+	public static void appendNewMessage(String msgToAppend) {
+		chatMessages.append(msgToAppend); 
+		/** TODO Eventuell zu aufrufen zu den Aufrufen in die GUI umbauen,
+		 *  wenn ich nicht den Stringbuffer in der GUI benutzen kann. 
+		 *  Eine alternative scheinen die implementierenden klassen vom 
+		 *  Interface AbstractDocumument.Content zu sein,
+		 *  also StringContent und GapContent
+		 */
 	}
 
 
