@@ -7,6 +7,9 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.Socket;
 
+
+import static client.ChatClient.REQUIRED_CHARSET;
+
 // und startet einen neuen Arbeits-Thread für jede Verbindung,
 class ChatServerWorkThread extends java.lang.Thread {
 	private static final String UNKNOWN_MSG_TO_SRV = "Unknown Message to Server";
@@ -46,10 +49,13 @@ class ChatServerWorkThread extends java.lang.Thread {
 		try {
 			/*
 			 * inputstream vom socket in inputreader und bufferedreader
-			 * verpacken, weil es bequemer ist
+			 * verpacken, weil es bequemer ist. Das Manuell angelieferte 
+			 * Charset beim InputStreamReader sorgt dafür, dass der 
+			 * InputStream sich bei speziellen zeichenfolgen mit sonderzeichen 
+			 * ( z.B. "tü" oder "╚" ) nicht aufhängt. 
 			 */
 			inFromClient = new BufferedReader(new InputStreamReader(
-					workingSocket.getInputStream()));
+					workingSocket.getInputStream(),REQUIRED_CHARSET));
 			// Bei outToClient brauchen wir zumindest einen DataOutputStream
 			outToClient = new DataOutputStream(workingSocket.getOutputStream());
 
@@ -127,8 +133,8 @@ class ChatServerWorkThread extends java.lang.Thread {
 			// userName angeben
 			msgBuilder.append(u.chatName + " ");
 		}
-		msgBuilder.append("\n"); // nachricht mit newline abschließen
-
+		//msgBuilder.append("\n"); // Das newline war ein newline zu viel
+		
 		writeToClientOut(msgBuilder.toString());
 
 	}
