@@ -23,6 +23,9 @@ public class ClientServerCommunicator extends Thread {
 	private static final String ONE_OR_MORE_SPACES = " +"; 
 
 	public static final int SERVER_PORT = 50000;
+        
+        
+   
 
 	private Socket clientSocket; // TCP-Standard-Socketklasse
 
@@ -38,6 +41,26 @@ public class ClientServerCommunicator extends Thread {
 		this.userName = userName;
 		this.serverHostName = serverHostName;
 	}
+        
+        /**
+         * Loggt den benutzer ein und erfüllt somit den zweck von den zeilen
+         * 79 und 80 der methode ClientServerCommunicator#run()
+         * Dies wird ausgelagert, damit die anmeldung an den server (NEW) und die
+         * abfrage der liste (INFO) von einander getrennt ausgeführt werden
+         * können. Ein problem dabei ist die tatsache, dass sich jedoch das Ein-
+         * loggen (der "NEW"-Schritt) und das abholen der user-liste vom server
+         * (der "INFO"-Schritt") die gleiche verbindung/den gleichen socket
+         * teilen müssen. Dies wird dadurch behoben, dass der ClientServerCom
+         * municator Thread einfach den von logUserIn benutzten socket bekommt
+         * @param logInName der name mit dem sich der benutzer einloggen will
+         * sollte keine leerzeichen und sonderzeichen enthalten.
+         * @return der Socket, der die verbindung darstellt, mit welcher sich
+         * der client beim server eingelogt hat. Falls die verbindung nicht ge
+         * klappt hat, wird null zurückgegeben. 
+         */
+        static Socket logUserIn(String logInName) {
+            throw new UnsupportedOperationException("Not supported yet."); 
+        }
 
 	public void run() {
 		/* Client starten. Ende, wenn quit eingegeben wurde */
@@ -124,5 +147,7 @@ public class ClientServerCommunicator extends Thread {
 		System.out.println("TCP Client got from Server: " + reply);
 		return reply;
 	}
+        
+        
 
 }

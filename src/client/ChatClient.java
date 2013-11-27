@@ -1,11 +1,14 @@
 package client;
 
+import client.gui.ChatClientGUI;
 import java.net.InetAddress;
+import java.net.Socket;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 
 import server.ChatUser;
 
@@ -26,7 +29,7 @@ public class ChatClient {
 	/*Liste wird von ClientServerCommunicator befüllt, 
 	 * mit daten aus einer INFO-nachricht vom server
 	 */
-	static List<ChatUser> users = new ArrayList<>();
+	public static List<ChatUser> users = new ArrayList<>();
 	
 	/*
 	 * ein puffer, welcher die von ClientMessageReciever gelesenen
@@ -47,17 +50,39 @@ public class ChatClient {
 	private static InetAddress serverIpAddressTcp; //addresse des servers
 	
 	public static void main(String[] args) {
-		//Der hostname des servers wird als parameter über args übergeben.
-		String serverAddressstring = args[0];
+               
+		/*Der hostname des servers wird in einem dialog vor start der
+                  eigentlichen GUI eingegeben.
+                */  
+                
+		String serverAddressstring = JOptionPane.showInputDialog("Bitte hostnamen eingeben");
 		try {
 			serverIpAddressTcp = InetAddress.getByName(serverAddressstring);
 		} catch (UnknownHostException shouldntHappen) {
 			//in der laborumgebung sollte der host gefunden werden können.
+                    JOptionPane.showMessageDialog(null, "Konnte den Server"
+                                + " unter dem gegebenen hostnamen nicht finden","Fehler!", JOptionPane.ERROR_MESSAGE);
 			shouldntHappen.printStackTrace(System.err); 
-			System.exit(EXIT_FAILURE); //vielleicht später lieber einen GUI-Dialog für den fehler?
+			
 		} 
+                /*nachdem der host gefunden wurde, wird der benutzername
+                * eingegeben.
+                */
+                Socket serverConnection;
+                do {
+                logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
+                        + "gewünschten Benutzernamen ein",
+                        "Einloggen", JOptionPane.PLAIN_MESSAGE);
+                //Verbindung mit dem server
+                
+                
+                    serverConnection =  ClientServerCommunicator.logUserIn(logInName);
+                    
+                } while(serverConnection == null);
+                
+                
 		
-		startServerThread(); //Thread A
+		startServerThread(serverConnection); //Thread A
 		
 		//TODO: Create thread for communication with server (A)
 		//TODO: Create thread for broadcasting messages to peers (B) (Make it a Runnable)
@@ -79,9 +104,13 @@ public class ChatClient {
 	private static void startRecieverThread() throws SocketException {
 		(new ClientMessageReciever()).start();
 	}
+        
+        
 
-	private static void startServerThread() {
-		(new ClientServerCommunicator(logInName,serverIpAddressTcp.getCanonicalHostName())).start();
+        //existingConnection vom ausführen des NEW-Befehls 
+        //siehe ClientServerCommunicator.logUserIn()
+	private static void startServerThread(Socket existingConnection) {
+		(new ClientServerCommunicator(logInName,serverIpAddressTcp.getCanonicalHostName(),existingConnection)).start();
 	}
 
 	public static void appendNewMessage(String msgToAppend) {
