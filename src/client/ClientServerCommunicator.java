@@ -95,6 +95,9 @@ public class ClientServerCommunicator extends Thread {
 					ChatClient.users.clear();
 					ChatClient.users.addAll(users);
                                         
+                                        updateGUI(users);
+                                        updateClientSenderThread(users);
+                                        
                                         
                                         
 					Thread.sleep(DELAY_IN_SECONDS * 1000); // Wait for delayInSeconds seconds
@@ -178,5 +181,13 @@ public class ClientServerCommunicator extends Thread {
 		System.out.println("TCP Client got from Server: " + reply);
 		return reply;
 	}
+
+    private void updateGUI(List<ChatUser> users) {
+        
+    }
+
+    private void updateClientSenderThread(List<ChatUser> users) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
 
 }

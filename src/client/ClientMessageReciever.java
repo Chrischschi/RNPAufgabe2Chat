@@ -64,7 +64,5 @@ public class ClientMessageReciever extends Thread {
 		
 		return recievedStringFromData;
 	}
-	
-	
 
 }

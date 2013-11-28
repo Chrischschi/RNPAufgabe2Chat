@@ -8,6 +8,8 @@ package client.gui;
 
 import client.ChatClient;
 import client.ClientSenderThread;
+import java.net.SocketException;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -35,7 +37,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         inputTextFieldScrollPane = new javax.swing.JScrollPane();
         inputTextField = new javax.swing.JTextPane();
         userListScrollPane = new javax.swing.JScrollPane();
-        javax.swing.JList userList = new javax.swing.JList();
+        javax.swing.JList userList = new javax.swing.JList(ChatClient.users.toArray());
         chatProtocolScrollPane = new javax.swing.JScrollPane();
         chatProtocol = new javax.swing.JTextArea();
         labelForUserList = new javax.swing.JLabel();
@@ -54,7 +56,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         inputTextFieldScrollPane.setViewportView(inputTextField);
 
         userList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "" };
+            String[] strings = { "ChatClients.users.toArray();" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -75,7 +77,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(inputTextFieldScrollPane)
-                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
+                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelForUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -106,8 +108,13 @@ public class ChatClientGUI extends javax.swing.JFrame {
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
         String msgToSend = inputTextField.getText();
-        ClientSenderThread c = ChatClient.sendMessages(msgToSend);
+        try {
+        ClientSenderThread c = ChatClient.createMessageSender(msgToSend);
         java.awt.EventQueue.invokeLater(c);
+        } catch (SocketException e) {
+            JOptionPane.showMessageDialog(rootPane, "Es konnte kein socket für das verschicken der nachricht erzeugt werden!", "ClientSenderThread fehler", JOptionPane.ERROR_MESSAGE);
+            e.printStackTrace();
+        }
     }//GEN-LAST:event_sendButtonActionPerformed
 
     /**
