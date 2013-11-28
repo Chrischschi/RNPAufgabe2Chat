@@ -5,14 +5,19 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import static client.ChatClient.*;
+import client.gui.ChatClientGUI;
+
 
 public class ClientMessageReciever extends Thread {
 	
 	private DatagramSocket inFromPeers;
 	private boolean serviceRequested = true;
 	private String lastRecievedMessage; 
+        private ChatClientGUI chatGuiReference;
+        
 	
-	public ClientMessageReciever() throws SocketException {
+	public ClientMessageReciever(ChatClientGUI chatGui) throws SocketException {
+                this.chatGuiReference = chatGui;
 		inFromPeers = new DatagramSocket(ChatClient.PEER_PORT);
 	}
 	
@@ -31,8 +36,13 @@ public class ClientMessageReciever extends Thread {
 	/* Sorgt dafür, dass die nachricht in das Chat-Protokoll
 	 * eingetragen wird.
 	 */
-	private void updateClient(String msgToAppend) {
-		ChatClient.appendNewMessage(msgToAppend);
+	private void updateClient(final String msgToAppend) {
+               java.awt.EventQueue.invokeLater(new Runnable(){
+                   @Override
+                   public void run() {
+                       chatGuiReference.chatProtocol.append(msgToAppend);
+                   } 
+               });
 	}
 
 	/* Lauscht nach chat-nachrichten und extrahiert den string aus diesen. */

@@ -6,6 +6,9 @@
 
 package client.gui;
 
+import client.ChatClient;
+import client.ClientSenderThread;
+
 /**
  *
  * @author Christian
@@ -41,6 +44,11 @@ public class ChatClientGUI extends javax.swing.JFrame {
         setTitle("UDP Chat Client");
 
         sendButton.setLabel("Abschicken");
+        sendButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sendButtonActionPerformed(evt);
+            }
+        });
 
         inputTextField.setToolTipText("");
         inputTextFieldScrollPane.setViewportView(inputTextField);
@@ -96,6 +104,12 @@ public class ChatClientGUI extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
+    private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
+        String msgToSend = inputTextField.getText();
+        ClientSenderThread c = ChatClient.sendMessages(msgToSend);
+        java.awt.EventQueue.invokeLater(c);
+    }//GEN-LAST:event_sendButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -132,7 +146,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JTextArea chatProtocol;
+    public javax.swing.JTextArea chatProtocol;
     private javax.swing.JScrollPane chatProtocolScrollPane;
     private javax.swing.JTextPane inputTextField;
     private javax.swing.JScrollPane inputTextFieldScrollPane;
