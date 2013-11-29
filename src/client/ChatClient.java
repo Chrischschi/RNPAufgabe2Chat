@@ -40,7 +40,7 @@ public class ChatClient {
         /*Der hostname des servers wird in einem dialog vor start der
          eigentlichen GUI eingegeben.
          */
-
+        
         boolean serverFound = false;
         do {
 
@@ -59,8 +59,12 @@ public class ChatClient {
         /*nachdem der host gefunden wurde, wird der benutzername
          * eingegeben.
          */
+        
+        //GUI erstellen.
+        final ChatClientGUI gui = new ChatClientGUI();
+        
         boolean serverConnectionEstablished = false;
-        ClientServerCommunicator serverThread = new ClientServerCommunicator(serverIpAddressTcp);
+        ClientServerCommunicator serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
 
         do {
             logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
@@ -77,12 +81,10 @@ public class ChatClient {
         //Starte die abfrage vom server.
         serverThread.start();
 
-        //GUI starten.
-        final ChatClientGUI gui = new ChatClientGUI();
-
 
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
+                //GUI starten
                 gui.setVisible(true);
             }
         });

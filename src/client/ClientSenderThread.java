@@ -48,9 +48,9 @@ public class ClientSenderThread implements Runnable {
 			byte[] sendData = sendString.getBytes(REQUIRED_CHARSET);
 			
 			assert sendData.length <= ChatClient.DATAGRAM_SIZE : "sendData won't fit in datagram!"; //TODO remove assert after testing
-			
+			System.out.println("Size: " + sendData.length + "\nDatagramm size: " + ChatClient.DATAGRAM_SIZE);
 			//Datagramm-paket packen
-			DatagramPacket sendPacket = new DatagramPacket(sendData, ChatClient.DATAGRAM_SIZE, user.hostName,PEER_PORT);
+			DatagramPacket sendPacket = new DatagramPacket(sendData, sendData.length , user.hostName,PEER_PORT);
 			System.out.println("Chat Client tries to send message " + msg + " to Peer " + user.chatName +
 					" at " + user.hostName );
 			sendMsgToPeer(user,sendPacket, msg);

@@ -22,6 +22,15 @@ public class ChatUser {
 		return this.chatName.equals(that.chatName) && 
 			   this.hostName.equals(that.hostName);
 	}
+        /** Tostring implementiert, damit es in der JList verständlicher
+         * aussieht.
+         * 
+         * @return ein string
+         */
+        @Override
+        public String toString() {
+            return chatName + "@" + hostName.getCanonicalHostName();
+        }
 	
 
 }

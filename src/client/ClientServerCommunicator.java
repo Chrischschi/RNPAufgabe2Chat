@@ -1,5 +1,6 @@
 package client;
 
+import client.gui.ChatClientGUI;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -33,9 +34,12 @@ public class ClientServerCommunicator extends Thread {
 	InetAddress serverHostAddress;
 
 	boolean loggedIn = false;
+        
+        ChatClientGUI gui;
 
-	public ClientServerCommunicator(InetAddress serverHostAddress) {
+	public ClientServerCommunicator(InetAddress serverHostAddress, ChatClientGUI gui) {
 		this.serverHostAddress = serverHostAddress;
+                this.gui = gui;
 	}
 
 	/**
@@ -89,14 +93,18 @@ public class ClientServerCommunicator extends Thread {
 				while (ChatClient.isServiceRequested()) {
 					writeToServer("INFO"); // Get Userlist from Server
 					response = readFromServer();
-					List<ChatUser> users = getUsers(response); // Compute
+					final List<ChatUser> users = getUsers(response); // Compute
 																// Userlist
 																// String
 					ChatClient.users.clear();
 					ChatClient.users.addAll(users);
                                         
-                                        updateGUI(users);
-                                        updateClientSenderThread(users);
+                                         java.awt.EventQueue.invokeLater(new Runnable() {
+                                           public void run() {
+                                             gui.userList.setListData(users.toArray()); //Wenn es nicht klappt, zu ChatClient.users.toArray umaendern.
+                                           }
+                                        });
+                                        
                                         
                                         
                                         
@@ -181,15 +189,5 @@ public class ClientServerCommunicator extends Thread {
 		System.out.println("TCP Client got from Server: " + reply);
 		return reply;
 	}
-
-    private void updateGUI(List<ChatUser> users) {
-        //1: aus liste mit chat-usern eine liste nur mit den usernamen erzeugen
-        //2: diese erzeugte liste in die gui eintragen
-        
-    }
-
-    private void updateClientSenderThread(List<ChatUser> users) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
 
 }

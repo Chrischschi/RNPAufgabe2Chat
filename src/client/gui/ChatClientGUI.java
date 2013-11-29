@@ -81,8 +81,8 @@ public class ChatClientGUI extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelForUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(userListScrollPane)
-                    .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(sendButton, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(userListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -159,7 +159,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane inputTextFieldScrollPane;
     private javax.swing.JLabel labelForUserList;
     private javax.swing.JButton sendButton;
-    private javax.swing.JList userList;
+    public javax.swing.JList userList;
     private javax.swing.JScrollPane userListScrollPane;
     // End of variables declaration//GEN-END:variables
 }

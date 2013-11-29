@@ -33,8 +33,8 @@
               <EmptySpace max="-2" attributes="0"/>
               <Group type="103" groupAlignment="0" max="-2" attributes="0">
                   <Component id="labelForUserList" max="32767" attributes="0"/>
-                  <Component id="userListScrollPane" alignment="0" max="32767" attributes="0"/>
                   <Component id="sendButton" alignment="0" max="32767" attributes="0"/>
+                  <Component id="userListScrollPane" alignment="1" max="32767" attributes="0"/>
               </Group>
               <EmptySpace max="-2" attributes="0"/>
           </Group>
@@ -108,6 +108,7 @@
           <AuxValues>
             <AuxValue name="JavaCodeGenerator_CreateCodeCustom" type="java.lang.String" value="new javax.swing.JList(ChatClient.users.toArray())"/>
             <AuxValue name="JavaCodeGenerator_SerializeTo" type="java.lang.String" value="ChatClientGUI_userList"/>
+            <AuxValue name="JavaCodeGenerator_VariableModifier" type="java.lang.Integer" value="1"/>
           </AuxValues>
         </Component>
       </SubComponents>
