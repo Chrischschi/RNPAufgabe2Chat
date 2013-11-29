@@ -145,7 +145,7 @@ public class ChatFrame extends JFrame{
 		chat.setLineWrap(true);
 		chat.setWrapStyleWord(true);
 		chat.setEditable(false);
-		addLine("test",Util.BLIND_TEXT);
+		//addLine("test",Util.BLIND_TEXT);
 		eingabe.setBounds(scale(30), scale(628), scale(673), scale(50));
 		eingabe.setBorder(BorderFactory.createEmptyBorder());
 		users.setBounds(scale(733), scale(30), scale(200), scale(568));

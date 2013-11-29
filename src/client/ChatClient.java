@@ -27,7 +27,6 @@ public class ChatClient {
      * mit daten aus einer INFO-nachricht vom server
      */
     public static List<ChatUser> users = Collections.synchronizedList(new ArrayList<ChatUser>());
-
     static String logInName = ""; //der name, mit dem man sich beim server einloggt
     private static InetAddress serverIpAddressTcp; //addresse des servers
     public static ClientServerCommunicator serverThread = null;
@@ -37,11 +36,11 @@ public class ChatClient {
         /*Der hostname des servers wird in einem dialog vor start der
          eigentlichen GUI eingegeben.
          */
-        
+        String serverAddressstring = "";
         boolean serverFound = false;
         do {
 
-            String serverAddressstring = JOptionPane.showInputDialog("Bitte hostnamen eingeben");
+            serverAddressstring = JOptionPane.showInputDialog("Bitte hostnamen eingeben");
             try {
                 serverIpAddressTcp = InetAddress.getByName(serverAddressstring);
                 serverFound = true;
@@ -51,54 +50,63 @@ public class ChatClient {
                         + " unter dem gegebenen hostnamen nicht finden", "Fehler!", JOptionPane.ERROR_MESSAGE);
                 serverFound = false;
             }
-        } while (!serverFound);
+        } while (!serverFound && serverAddressstring != null);
 
         /*nachdem der host gefunden wurde, wird der benutzername
          * eingegeben.
          */
-        
-        //GUI erstellen.
-        final ChatClientGUI gui = new ChatClientGUI();
-        
-        boolean serverConnectionEstablished = false;
-        serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
+        if (serverAddressstring != null) {
+            //GUI erstellen.
+            final ChatClientGUI gui = new ChatClientGUI();
 
-        do {
-            logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
-                    + "gewünschten Benutzernamen ein",
-                    "Einloggen", JOptionPane.PLAIN_MESSAGE);
+            boolean serverConnectionEstablished = false;
+            serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
 
-            //Verbindung mit dem server
-            serverConnectionEstablished = serverThread.tryLogUserIn(logInName);
+            do {
+                logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
+                        + "gewünschten Benutzernamen ein",
+                        "Einloggen", JOptionPane.PLAIN_MESSAGE);
 
-
-        } while (!serverConnectionEstablished);
+                //Verbindung mit dem server
+                if(logInName!=null)
+                serverConnectionEstablished = serverThread.tryLogUserIn(logInName);
 
 
-        //Starte die abfrage vom server.
-        serverThread.start();
+            } while (!serverConnectionEstablished && logInName != null);
+            if (logInName != null) {
+                System.out.println("name: "+logInName);
+                //Starte die abfrage vom server.
+                serverThread.start();
 
 
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                //GUI starten
-                gui.setVisible(true);
-            }
-        });
+                java.awt.EventQueue.invokeLater(new Runnable() {
+                    public void run() {
+                        //GUI starten
+                        gui.setVisible(true);
+                    }
+                });
 
 
-        //TODO: Create thread for broadcasting messages to peers (B) (Make it a Runnable)
-        //TODO: Trigger it from a GUI event (InvocationEvent,java.awt.EventQueue!)
-        //TODO: last but not least, make the GUI
+                //TODO: Create thread for broadcasting messages to peers (B) (Make it a Runnable)
+                //TODO: Trigger it from a GUI event (InvocationEvent,java.awt.EventQueue!)
+                //TODO: last but not least, make the GUI
 
-        //Thread B is started from the GUI
+                //Thread B is started from the GUI
 
-        try {
-            startRecieverThread(gui);
-        } catch (SocketException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace(System.err);
-        } //Thread C
+                try {
+                    startRecieverThread(gui);
+                } catch (SocketException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace(System.err);
+                } //Thread C
+            }else{
+            System.out.println("Keine Name eingegeben, programm wird abgebrochen");
+        }
+
+        }else{
+            System.out.println("Keine Adresse eingegeben, programm wird abgebrochen");
+        }
+
 
     }
 
