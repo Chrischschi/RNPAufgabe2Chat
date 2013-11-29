@@ -183,6 +183,8 @@ public class ClientServerCommunicator extends Thread {
 	}
 
     private void updateGUI(List<ChatUser> users) {
+        //1: aus liste mit chat-usern eine liste nur mit den usernamen erzeugen
+        //2: diese erzeugte liste in die gui eintragen
         
     }
 

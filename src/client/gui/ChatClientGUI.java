@@ -37,7 +37,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         inputTextFieldScrollPane = new javax.swing.JScrollPane();
         inputTextField = new javax.swing.JTextPane();
         userListScrollPane = new javax.swing.JScrollPane();
-        javax.swing.JList userList = new javax.swing.JList(ChatClient.users.toArray());
+        userList = new javax.swing.JList(ChatClient.users.toArray());
         chatProtocolScrollPane = new javax.swing.JScrollPane();
         chatProtocol = new javax.swing.JTextArea();
         labelForUserList = new javax.swing.JLabel();
@@ -56,7 +56,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         inputTextFieldScrollPane.setViewportView(inputTextField);
 
         userList.setModel(new javax.swing.AbstractListModel() {
-            String[] strings = { "ChatClients.users.toArray();" };
+            String[] strings = { "" };
             public int getSize() { return strings.length; }
             public Object getElementAt(int i) { return strings[i]; }
         });
@@ -77,7 +77,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(inputTextFieldScrollPane)
-                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 373, Short.MAX_VALUE))
+                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelForUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -159,6 +159,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
     private javax.swing.JScrollPane inputTextFieldScrollPane;
     private javax.swing.JLabel labelForUserList;
     private javax.swing.JButton sendButton;
+    private javax.swing.JList userList;
     private javax.swing.JScrollPane userListScrollPane;
     // End of variables declaration//GEN-END:variables
 }
