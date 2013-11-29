@@ -88,9 +88,10 @@ public class ClientServerCommunicator extends Thread {
 	public void run() {
 		if (loggedIn) {
 			/* Client starten. Ende, wenn quit eingegeben wurde */
+                        boolean serviceRequested = true;
 			String response; // vom User übergebener String
 			try {
-				while (ChatClient.isServiceRequested()) {
+				while (!this.isInterrupted()&&serviceRequested) {
 					writeToServer("INFO"); // Get Userlist from Server
 					response = readFromServer();
 					final List<ChatUser> users = getUsers(response); // Compute
@@ -104,11 +105,12 @@ public class ClientServerCommunicator extends Thread {
                                              gui.userList.setListData(users.toArray()); //Wenn es nicht klappt, zu ChatClient.users.toArray umaendern.
                                            }
                                         });
-                                        
-                                        
-                                        
-                                        
+                                        try{
 					Thread.sleep(DELAY_IN_SECONDS * 1000); // Wait for delayInSeconds seconds
+                                        }catch(InterruptedException e){
+                                            System.out.println("Gui beendet -> Interrupt");
+                                            serviceRequested = false;
+                                        }
 				}
 				writeToServer("BYE");
 				response = readFromServer();

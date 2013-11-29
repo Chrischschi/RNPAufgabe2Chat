@@ -42,8 +42,13 @@ public class ChatClientGUI extends javax.swing.JFrame {
         chatProtocol = new javax.swing.JTextArea();
         labelForUserList = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("UDP Chat Client");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                formWindowClosed(evt);
+            }
+        });
 
         sendButton.setLabel("Abschicken");
         sendButton.addActionListener(new java.awt.event.ActionListener() {
@@ -117,6 +122,10 @@ public class ChatClientGUI extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_sendButtonActionPerformed
 
+    private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
+        logUserOut();
+    }//GEN-LAST:event_formWindowClosed
+
     /**
      * @param args the command line arguments
      */
@@ -162,4 +171,10 @@ public class ChatClientGUI extends javax.swing.JFrame {
     public javax.swing.JList userList;
     private javax.swing.JScrollPane userListScrollPane;
     // End of variables declaration//GEN-END:variables
+
+    public void logUserOut() {
+        if(ChatClient.serverThread!=null && !ChatClient.serverThread.isInterrupted()){
+        ChatClient.serverThread.interrupt();
+        }
+    }
 }

@@ -27,13 +27,10 @@ public class ChatClient {
      * mit daten aus einer INFO-nachricht vom server
      */
     public static List<ChatUser> users = Collections.synchronizedList(new ArrayList<ChatUser>());
-    private static boolean serviceRequested = true;
 
-    public static boolean isServiceRequested() {
-        return serviceRequested;
-    }
     private static String logInName; //der name, mit dem man sich beim server einloggt
     private static InetAddress serverIpAddressTcp; //addresse des servers
+    public static ClientServerCommunicator serverThread = null;
 
     public static void main(String[] args) {
 
@@ -64,7 +61,7 @@ public class ChatClient {
         final ChatClientGUI gui = new ChatClientGUI();
         
         boolean serverConnectionEstablished = false;
-        ClientServerCommunicator serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
+        serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
 
         do {
             logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
