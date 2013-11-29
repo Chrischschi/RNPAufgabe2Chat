@@ -43,7 +43,8 @@ public class ClientSenderThread implements Runnable {
 		
 		for(ChatUser user : recievers) {
 			//String, der beim anderen client angezeigt werden soll, zusammenbauen
-			String sendString = user.chatName + ": " + msg + "\n"; 
+                    System.out.println("Sende an: " + user.chatName);
+			String sendString = ChatClient.logInName + ": " + msg + "\n"; 
 			//String-inhalt als UTF-8 kodiertes byte-array bereitstellen
 			byte[] sendData = sendString.getBytes(REQUIRED_CHARSET);
 			

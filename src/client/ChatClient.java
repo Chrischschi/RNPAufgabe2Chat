@@ -28,7 +28,7 @@ public class ChatClient {
      */
     public static List<ChatUser> users = Collections.synchronizedList(new ArrayList<ChatUser>());
 
-    private static String logInName; //der name, mit dem man sich beim server einloggt
+    static String logInName = ""; //der name, mit dem man sich beim server einloggt
     private static InetAddress serverIpAddressTcp; //addresse des servers
     public static ClientServerCommunicator serverThread = null;
 
