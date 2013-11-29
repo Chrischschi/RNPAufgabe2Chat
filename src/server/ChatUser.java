@@ -25,7 +25,7 @@ public class ChatUser {
         /** Tostring implementiert, damit es in der JList verständlicher
          * aussieht.
          * 
-         * @return ein string
+         * @return ein string der form "chatName@hostName"
          */
         @Override
         public String toString() {

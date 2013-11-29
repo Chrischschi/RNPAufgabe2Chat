@@ -11,7 +11,6 @@ import client.gui.ChatClientGUI;
 public class ClientMessageReciever extends Thread {
 	
 	private DatagramSocket inFromPeers;
-	private boolean serviceRequested = true;
 	private String lastRecievedMessage; 
         private ChatClientGUI chatGuiReference;
         
@@ -22,7 +21,7 @@ public class ClientMessageReciever extends Thread {
 	}
 	
 	public void run() {
-		while(serviceRequested) {
+		while(!isInterrupted()) {
 		try {
 			lastRecievedMessage = recieveMessage();
 		} catch (IOException e) {
@@ -31,6 +30,9 @@ public class ClientMessageReciever extends Thread {
 		}
 		updateClient(lastRecievedMessage);
 		}
+                
+                inFromPeers.close();
+                System.out.println("ClientMessageReciever Stopp");
 	}
 	
 	/* Sorgt dafür, dass die nachricht in das Chat-Protokoll

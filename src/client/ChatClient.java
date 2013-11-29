@@ -31,6 +31,7 @@ public class ChatClient {
     static String logInName = ""; //der name, mit dem man sich beim server einloggt
     private static InetAddress serverIpAddressTcp; //addresse des servers
     public static ClientServerCommunicator serverThread = null;
+    public static ClientMessageReciever messageReciever = null;
 
     public static void main(String[] args) {
 
@@ -94,7 +95,8 @@ public class ChatClient {
         //Thread B is started from the GUI
 
         try {
-            startRecieverThread(gui);
+           messageReciever = createRecieverThread(gui);
+           messageReciever.start();
         } catch (SocketException e) {
             // TODO Auto-generated catch block
             e.printStackTrace(System.err);
@@ -102,8 +104,8 @@ public class ChatClient {
 
     }
 
-    private static void startRecieverThread(ChatClientGUI chatGui) throws SocketException {
-        (new ClientMessageReciever(chatGui)).start();
+    public static ClientMessageReciever createRecieverThread(ChatClientGUI chatGui) throws SocketException {
+       return new ClientMessageReciever(chatGui);
     }
 
     public static ClientSenderThread createMessageSender(String msgToSend) throws SocketException {

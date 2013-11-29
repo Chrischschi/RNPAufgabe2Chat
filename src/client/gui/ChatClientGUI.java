@@ -9,6 +9,8 @@ package client.gui;
 import client.ChatClient;
 import client.ClientSenderThread;
 import java.net.SocketException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -42,7 +44,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         chatProtocol = new javax.swing.JTextArea();
         labelForUserList = new javax.swing.JLabel();
 
-        setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("UDP Chat Client");
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosed(java.awt.event.WindowEvent evt) {
@@ -126,7 +128,9 @@ public class ChatClientGUI extends javax.swing.JFrame {
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
-        logUserOut();
+        logUserOut(); //ClientMessageCommunicator beenden und aufräumen
+        stopListeningToMessages(); //ClientMessageReciever beenden und aufräumen
+        
     }//GEN-LAST:event_formWindowClosed
 
     /**
@@ -178,6 +182,24 @@ public class ChatClientGUI extends javax.swing.JFrame {
     public void logUserOut() {
         if(ChatClient.serverThread!=null && !ChatClient.serverThread.isInterrupted()){
         ChatClient.serverThread.interrupt();
+            try {
+                ChatClient.serverThread.join();
+            } catch (InterruptedException ex) {
+                System.err.println("GUI/Main Thread has been interrupted during logUserOut!"); 
+                ex.printStackTrace();
+            }
+        }
+    }
+
+    private void stopListeningToMessages() {
+        if(ChatClient.messageReciever != null && !ChatClient.messageReciever.isInterrupted()) {
+            ChatClient.messageReciever.interrupt();
+            try {
+                ChatClient.messageReciever.join();
+            } catch (InterruptedException ex) {
+                System.err.println("GUI/Main Thread has been interrupted during stopListeningToMessages!");
+                ex.printStackTrace();
+            }
         }
     }
 }

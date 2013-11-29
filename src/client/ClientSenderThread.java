@@ -37,6 +37,7 @@ public class ClientSenderThread implements Runnable {
 	@Override
 	public void run() {
 		broadCast(msgToBroadcast,deliverTo);
+                System.out.println("ClientSenderThread sent " + msgToBroadcast);
 	}
 
 	private void broadCast(String msg, List<ChatUser> recievers) {
