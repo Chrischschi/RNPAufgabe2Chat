@@ -56,8 +56,7 @@ public class ClientMessageReciever extends Thread {
 		
 		//Inhalt des paketes verarbeiten
 		byte[] recievedData = recievedPacket.getData();
-		String recievedStringFromData = new String(recievedData,REQUIRED_CHARSET);
-		
+		String recievedStringFromData = new String(recievedData,REQUIRED_CHARSET).trim() + "\n";
 		//Logging
 		System.out.println(this.getClass() + ": Recieved UDP Packet with contents " + recievedStringFromData +
 				" from " + recievedPacket.getAddress() + ":" + recievedPacket.getPort()  );

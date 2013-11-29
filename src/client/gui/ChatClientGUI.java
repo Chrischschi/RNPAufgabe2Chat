@@ -68,8 +68,11 @@ public class ChatClientGUI extends javax.swing.JFrame {
         userList.setCursor(new java.awt.Cursor(java.awt.Cursor.DEFAULT_CURSOR));
         userListScrollPane.setViewportView(userList);
 
+        chatProtocol.setEditable(false);
         chatProtocol.setColumns(20);
+        chatProtocol.setLineWrap(true);
         chatProtocol.setRows(5);
+        chatProtocol.setWrapStyleWord(true);
         chatProtocolScrollPane.setViewportView(chatProtocol);
 
         labelForUserList.setText("Aktuell Eingeloggt:");
