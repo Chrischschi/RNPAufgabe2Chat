@@ -9,8 +9,6 @@ package client.gui;
 import client.ChatClient;
 import client.ClientSenderThread;
 import java.net.SocketException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -36,13 +34,12 @@ public class ChatClientGUI extends javax.swing.JFrame {
     private void initComponents() {
 
         sendButton = new javax.swing.JButton();
-        inputTextFieldScrollPane = new javax.swing.JScrollPane();
-        inputTextField = new javax.swing.JTextPane();
         userListScrollPane = new javax.swing.JScrollPane();
         userList = new javax.swing.JList(ChatClient.users.toArray());
         chatProtocolScrollPane = new javax.swing.JScrollPane();
         chatProtocol = new javax.swing.JTextArea();
         labelForUserList = new javax.swing.JLabel();
+        inputTextField = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("UDP Chat Client");
@@ -58,9 +55,6 @@ public class ChatClientGUI extends javax.swing.JFrame {
                 sendButtonActionPerformed(evt);
             }
         });
-
-        inputTextField.setToolTipText("");
-        inputTextFieldScrollPane.setViewportView(inputTextField);
 
         userList.setModel(new javax.swing.AbstractListModel() {
             String[] strings = { "" };
@@ -79,6 +73,12 @@ public class ChatClientGUI extends javax.swing.JFrame {
 
         labelForUserList.setText("Aktuell Eingeloggt:");
 
+        inputTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                inputTextFieldActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,8 +86,8 @@ public class ChatClientGUI extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(inputTextFieldScrollPane)
-                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
+                    .addComponent(chatProtocolScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                    .addComponent(inputTextField))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(labelForUserList, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
@@ -107,9 +107,9 @@ public class ChatClientGUI extends javax.swing.JFrame {
                         .addContainerGap()
                         .addComponent(chatProtocolScrollPane)))
                 .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(sendButton)
-                    .addComponent(inputTextFieldScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(inputTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addContainerGap())
         );
 
@@ -125,6 +125,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(rootPane, "Es konnte kein socket für das verschicken der nachricht erzeugt werden!", "ClientSenderThread fehler", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
+        inputTextField.setText(""); //Eingabe aus textfeld nach absendung löschen.
     }//GEN-LAST:event_sendButtonActionPerformed
 
     private void formWindowClosed(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosed
@@ -132,6 +133,11 @@ public class ChatClientGUI extends javax.swing.JFrame {
         stopListeningToMessages(); //ClientMessageReciever beenden und aufräumen
         
     }//GEN-LAST:event_formWindowClosed
+
+    private void inputTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_inputTextFieldActionPerformed
+       //delegiere zu this.sendButtonActionPerformed(ActionEvent)
+        sendButtonActionPerformed(evt);
+    }//GEN-LAST:event_inputTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -171,8 +177,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     public javax.swing.JTextArea chatProtocol;
     private javax.swing.JScrollPane chatProtocolScrollPane;
-    private javax.swing.JTextPane inputTextField;
-    private javax.swing.JScrollPane inputTextFieldScrollPane;
+    private javax.swing.JTextField inputTextField;
     private javax.swing.JLabel labelForUserList;
     private javax.swing.JButton sendButton;
     public javax.swing.JList userList;
@@ -183,6 +188,7 @@ public class ChatClientGUI extends javax.swing.JFrame {
         if(ChatClient.serverThread!=null && !ChatClient.serverThread.isInterrupted()){
         ChatClient.serverThread.interrupt();
             try {
+                System.out.println("Stopping ClientServerCommunicator...");
                 ChatClient.serverThread.join();
             } catch (InterruptedException ex) {
                 System.err.println("GUI/Main Thread has been interrupted during logUserOut!"); 
@@ -194,7 +200,14 @@ public class ChatClientGUI extends javax.swing.JFrame {
     private void stopListeningToMessages() {
         if(ChatClient.messageReciever != null && !ChatClient.messageReciever.isInterrupted()) {
             ChatClient.messageReciever.interrupt();
+            ChatClient.messageReciever.sendUnblockMessageToReciever(); /* 
+             * Sende dem Socket des ClientMessageRecievers über localhost eine 
+             * nachricht als Datagramm, damit er vom blockierenden empfangen der 
+             * UDP-Datagramme zurückkehren kann. Memo: DatagramPacket#recieve und
+             * Threads vertragen sich schwer!
+             */
             try {
+                System.out.println("Stopping ClientMessageReciever...");
                 ChatClient.messageReciever.join();
             } catch (InterruptedException ex) {
                 System.err.println("GUI/Main Thread has been interrupted during stopListeningToMessages!");

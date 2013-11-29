@@ -6,9 +6,17 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import static client.ChatClient.*;
 import client.gui.ChatClientGUI;
+import java.net.InetAddress;
+import java.util.Arrays;
+import java.util.List;
+import server.ChatUser;
 
 
 public class ClientMessageReciever extends Thread {
+    /**
+     * Wird an den Client gesendet, um ihn zu löschen
+     */
+    private static final String INTERNAL_MESSAGE_UNBLOCK = "unblock";
 	
 	private DatagramSocket inFromPeers;
 	private String lastRecievedMessage; 
@@ -20,6 +28,7 @@ public class ClientMessageReciever extends Thread {
 		inFromPeers = new DatagramSocket(ChatClient.PEER_PORT);
 	}
 	
+    @Override
 	public void run() {
 		while(!isInterrupted()) {
 		try {
@@ -28,10 +37,11 @@ public class ClientMessageReciever extends Thread {
 			// TODO Auto-generated catch block
 			e.printStackTrace(System.err);
 		}
-		updateClient(lastRecievedMessage);
-		}
+		if(!lastRecievedMessage.equals(INTERNAL_MESSAGE_UNBLOCK)) updateClient(lastRecievedMessage);
+		} 
                 
                 inFromPeers.close();
+                
                 System.out.println("ClientMessageReciever Stopp");
 	}
 	
@@ -65,5 +75,21 @@ public class ClientMessageReciever extends Thread {
 		
 		return recievedStringFromData;
 	}
+
+        
+    /**
+     * Schließt den Datagramm-Socket des Threads von außerhalb des Threads, 
+     * aber noch innerhalb des clients.
+     */
+    public void sendUnblockMessageToReciever() {
+            try {
+                List<ChatUser> localHostList = Arrays.asList(new ChatUser("localhost", InetAddress.getLoopbackAddress()));
+                new Thread(new ClientSenderThread(INTERNAL_MESSAGE_UNBLOCK,localHostList)).start();
+            } catch (SocketException ex) { //Wenn hier eine exception auftritt
+                ex.printStackTrace(); 
+            }
+        
+        System.out.println("Closed Socket inFromPeers!");
+    }
 
 }

@@ -65,12 +65,24 @@ public class ChatClient {
 
             do {
                 logInName = JOptionPane.showInputDialog(null, "Bitte gebe deinen"
-                        + "gewünschten Benutzernamen ein",
+                        + " gewünschten Benutzernamen ein",
                         "Einloggen", JOptionPane.PLAIN_MESSAGE);
 
                 //Verbindung mit dem server
-                if(logInName!=null)
-                serverConnectionEstablished = serverThread.tryLogUserIn(logInName);
+                if(logInName!=null) {
+                    serverConnectionEstablished = serverThread.tryLogUserIn(logInName);
+                }
+                else {//Benutzer hat "Abbrechen" oder X gedrückt
+                    System.out.println("Der Benutzer wollte seinen namen nicht"
+                            + " eingeben und hat das programm beendet. ");
+                    System.exit(0); //verlassen, keine ressourcen wurden verwendet, daher nichts zu schließen.
+                } 
+                /* Vor erneutem anzeigen des eingabe-dialogs / Starten der 
+                 * Chat-GUI wäre es eine nette idee, einen dialog anzuzeigen, 
+                 * welcher die empfangene fehler-nachricht vom server / ein 
+                 * "Client wurde erfolgreich auf dem Server eingeloggt." 
+                 * anzeigt.
+                 */
 
 
             } while (!serverConnectionEstablished && logInName != null);
@@ -105,6 +117,7 @@ public class ChatClient {
                 //Programm ist bereit zum chatten
             }else{
             System.out.println("Keine Name eingegeben, programm wird abgebrochen");
+            
         }
 
         }else{
