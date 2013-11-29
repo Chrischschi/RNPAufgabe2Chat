@@ -95,11 +95,14 @@ public class ChatClient {
                 //Thread B is started from the GUI
 
                 try {
-                    startRecieverThread(gui);
+                    messageReciever = createRecieverThread(gui);
                 } catch (SocketException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace(System.err);
                 } //Thread C
+                
+                messageReciever.start();
+                //Programm ist bereit zum chatten
             }else{
             System.out.println("Keine Name eingegeben, programm wird abgebrochen");
         }
