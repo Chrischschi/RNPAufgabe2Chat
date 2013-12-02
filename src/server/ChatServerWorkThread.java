@@ -12,12 +12,8 @@ import static client.ChatClient.REQUIRED_CHARSET;
 
 // und startet einen neuen Arbeits-Thread für jede Verbindung,
 class ChatServerWorkThread extends java.lang.Thread {
-        //Konstanten
 	private static final String UNKNOWN_MSG_TO_SRV = "Unknown Message to Server";
 	private static final String ALLOWED_CHARACTERS = "([a-zA-Z]|[0-9])+";
-        
-        private static final int MAX_USER_NAME_LENGTH = 20; 
-        
 	int threadId; // Die id des threads
 	Socket workingSocket; // Der socket der dem Thread zugeteilt wurde.
 
@@ -65,37 +61,45 @@ class ChatServerWorkThread extends java.lang.Thread {
 
 			while (serviceRequested) {
 				messageFromClient = readFromClient();
-				String[] messageParts = messageFromClient.split(" "); // zwischen
-																		// den
-																		// teilen
-																		// der
-																		// nachricht
-																		// sind
-																		// leerzeichen
-				String command = messageParts[0]; // der erste teil der message
-													// zeigt an, ob es NEW, INFO
-													// oder BYE ist.
 
-				switch (command) {
-				case ChatServer.INFO:
-					doInfo();
-					break;
-				case ChatServer.BYE:
-					doBye(messageParts);
-					break;
-				case ChatServer.NEW:
-					doNew(messageParts, workingSocket.getInetAddress());
-					break;
-				default:
-					sendError(UNKNOWN_MSG_TO_SRV);
+				if(messageFromClient != null) {
+					String[] messageParts = messageFromClient.split(" "); // zwischen
+					// den
+					// teilen
+					// der
+					// nachricht
+					// sind
+					// leerzeichen
+					String command = messageParts[0]; // der erste teil der message
+					// zeigt an, ob es NEW, INFO
+					// oder BYE ist.
+
+					switch (command) {
+					case ChatServer.INFO:
+						doInfo();
+						break;
+					case ChatServer.BYE:
+						doBye(messageParts);
+						break;
+					case ChatServer.NEW:
+						doNew(messageParts, workingSocket.getInetAddress());
+						break;
+					default:
+						sendError(UNKNOWN_MSG_TO_SRV);
+					}
+				}else{
+					serviceRequested = false;
 				}
+
 			}
 
 			workingSocket.close();
 
+
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
 		}
+		ChatServer.activeThreads--;
 	}
 
 	/**
@@ -106,9 +110,10 @@ class ChatServerWorkThread extends java.lang.Thread {
 	 *            der grund, warum der server ERROR an den client sendet
 	 */
 	private void sendError(String reason) throws IOException {
-		writeToClientErr(ChatServer.ERROR_RESPONSE + " " + reason);
+		System.out.println("ERROR TEST");
 		serviceRequested = false;
 		logUserOut(chatUser);
+		writeToClientErr("ERROR " + reason);
 	}
 
 	private void logUserOut(ChatUser user) {
@@ -125,7 +130,7 @@ class ChatServerWorkThread extends java.lang.Thread {
 	 *            die message vom client als zerlegte strings.
 	 */
 	private void doInfo() throws IOException {
-		StringBuilder msgBuilder = new StringBuilder(ChatServer.LIST_RESPONSE + " ");
+		StringBuilder msgBuilder = new StringBuilder("LIST ");
 		// die anzahl der eingeloggten clients in die liste schreiben
 		msgBuilder.append(ChatServer.loggedInClients.size());
 		msgBuilder.append(" "); // Leerzeichen als trenner zwischen den
@@ -137,6 +142,7 @@ class ChatServerWorkThread extends java.lang.Thread {
 			// userName angeben
 			msgBuilder.append(u.chatName + " ");
 		}
+		//msgBuilder.append("\n"); // Das newline war ein newline zu viel
 		
 		writeToClientOut(msgBuilder.toString());
 
@@ -152,31 +158,28 @@ class ChatServerWorkThread extends java.lang.Thread {
 	private void doNew(String[] messageParts, InetAddress hostName)
 			throws IOException {
 		if (!isLoggedIn) {
+			if(true){
 			if (messageParts.length == 2) { // dann hat der username keine
 											// leerzeichen, da er nicht zerlegt
 											// wurde.
 				String userName = messageParts[1]; // username kommt nach dem
 													// NEW
-                                if(userName.length() <= MAX_USER_NAME_LENGTH ) {
-                                
-                                    if (userName.matches(ALLOWED_CHARACTERS)) {
-                                            ChatUser newUser = new ChatUser(userName, hostName);
-                                            ChatServer.logClientIn(newUser); // Aufm server
-                                            this.isLoggedIn = true; // Im serverthread
-                                            this.saveUser(newUser);
-                                            writeToClientOut(ChatServer.OK_RESPONSE); // laut spezifikation soll das an
-                                                                                            // den client gesendet werden.
-                                    } else {
-                                        sendError("Username invalid: contains special characters");
-                                    }
-                                } else {
-                                    sendError("Username is longer than 20 Characters!");
-                                }
+				if (userName.matches(ALLOWED_CHARACTERS)) {
+					ChatUser newUser = new ChatUser(userName, hostName);
+					ChatServer.logClientIn(newUser); // Aufm server
+					this.isLoggedIn = true; // Im serverthread
+					this.saveUser(newUser);
+					writeToClientOut("OK"); // laut spezifikation soll das an
+											// den client gesendet werden.
+				} else {
+					sendError("Username invalid: contains special characters");
+				}
 			} else {
-                            sendError("Username invalid: contains spaces");
+				sendError("Username invalid: contains spaces");
+			}
 			}
 		} else {
-                    sendError("Client already logged in");
+			sendError("Client already logged in");
 		}
 
 	}

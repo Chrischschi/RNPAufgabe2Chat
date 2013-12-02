@@ -22,17 +22,23 @@ public class ChatServer {
 
 	public static final String LOGIN_START_MSG = "Client %s from host %s trying to log in";
 
+	private static final int THREAD_LIMIT = 2;
+	
+	 public static final String ERROR_RESPONSE = "ERROR";
+	 public static final String LIST_RESPONSE = "LIST";
+	 public static final String OK_RESPONSE = "OK";
+
 	// die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
 	public static List<ChatUser> loggedInClients = Collections
 			.synchronizedList(new ArrayList<ChatUser>());
-    public static final String ERROR_RESPONSE = "ERROR";
-    public static final String LIST_RESPONSE = "LIST";
-    public static final String OK_RESPONSE = "OK";
+	
+	static volatile int activeThreads = 0;
 
 	public static void main(String[] args) {
 		Socket connectionSocket;
-
-		int counter = 0; // Zählt die erzeugten Bearbeitungs-Threads
+		
+		
+		
 
 		try (ServerSocket welcomeSocket = new ServerSocket(PORT_NUMBER);) {
 
@@ -44,12 +50,19 @@ public class ChatServer {
 
 				connectionSocket = welcomeSocket.accept();
 
-				(new ChatServerWorkThread(++counter, connectionSocket)).start();
+				if(activeThreads < THREAD_LIMIT) {
+					(new ChatServerWorkThread(activeThreads, connectionSocket)).start();
+					activeThreads++;
+				} else {
+					System.err.println("Too many threads running to start a new thread!");
+					connectionSocket.close(); //überflüssige ressource freigeben
+					System.gc();
+				} 
 
 			}
 		} catch (IOException e) {
 			e.printStackTrace(System.err);
-		}
+		} 
 
 	}
 
