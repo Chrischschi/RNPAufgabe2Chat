@@ -10,6 +10,7 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.swing.JOptionPane;
+import server.ChatServer;
 
 import server.ChatUser;
 
@@ -59,7 +60,7 @@ public class ChatClient {
         if (serverAddressstring != null) {
             //GUI erstellen.
             final ChatClientGUI gui = new ChatClientGUI();
-
+            String serverResponse = "";
             boolean serverConnectionEstablished = false;
             serverThread = new ClientServerCommunicator(serverIpAddressTcp, gui);
 
@@ -70,7 +71,8 @@ public class ChatClient {
 
                 //Verbindung mit dem server
                 if(logInName!=null) {
-                    serverConnectionEstablished = serverThread.tryLogUserIn(logInName);
+                    serverResponse = serverThread.tryLogUserIn(logInName);
+                    serverConnectionEstablished = serverResponse.equals(ChatServer.OK_RESPONSE);
                 }
                 else {//Benutzer hat "Abbrechen" oder X gedrückt
                     System.out.println("Der Benutzer wollte seinen namen nicht"
@@ -83,7 +85,14 @@ public class ChatClient {
                  * "Client wurde erfolgreich auf dem Server eingeloggt." 
                  * anzeigt.
                  */
-
+                if(serverConnectionEstablished) {
+                    JOptionPane.showMessageDialog(null, "Client wurde erfolgreich auf dem Server eingeloggt.",
+                            "Erfolgreich Eingeloggt!", JOptionPane.PLAIN_MESSAGE);
+                }else{
+                    JOptionPane.showMessageDialog(null, 
+                            serverResponse, 
+                            "Fehler Beim Einloggen", JOptionPane.ERROR_MESSAGE);
+            }
 
             } while (!serverConnectionEstablished && logInName != null);
             if (logInName != null) {

@@ -25,6 +25,9 @@ public class ChatServer {
 	// die Liste aller aktuell angemeldeten Chat-Clients (siehe ChatUser)
 	public static List<ChatUser> loggedInClients = Collections
 			.synchronizedList(new ArrayList<ChatUser>());
+    public static final String ERROR_RESPONSE = "ERROR";
+    public static final String LIST_RESPONSE = "LIST";
+    public static final String OK_RESPONSE = "OK";
 
 	public static void main(String[] args) {
 		Socket connectionSocket;

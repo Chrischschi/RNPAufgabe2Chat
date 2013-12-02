@@ -10,6 +10,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+import server.ChatServer;
 
 import server.ChatUser;
 
@@ -60,7 +61,7 @@ public class ClientServerCommunicator extends Thread {
 	 *         client beim server eingelogt hat. Falls die verbindung nicht ge
 	 *         klappt hat, wird null zurückgegeben.
 	 */
-	boolean tryLogUserIn(String userName) {
+	String tryLogUserIn(String userName) {
 		String response = "";
 		try {
 			clientSocket = new Socket(serverHostAddress, SERVER_PORT);
@@ -79,9 +80,8 @@ public class ClientServerCommunicator extends Thread {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		loggedIn = response.equals("OK");
-
-		return loggedIn;
+                loggedIn = response.equals(ChatServer.OK_RESPONSE);
+		return response;
 
 	}
 
